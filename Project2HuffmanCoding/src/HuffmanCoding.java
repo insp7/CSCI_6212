@@ -51,9 +51,11 @@ public class HuffmanCoding {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String text = br.readLine(); // user input
 
+        long startTime = System.nanoTime(); // Start timer
+
         // calculate all characters' frequencies
         Map<Character, Integer> frequencyMap = getFrequencies(text);
-        System.out.println("Character Frequencies: " + frequencyMap);
+//        System.out.println("Character Frequencies: " + frequencyMap);
 
         /**
          * Comparator implemented such that least frequent character is first.
@@ -87,6 +89,9 @@ public class HuffmanCoding {
         huffCodes = new HashMap<>();
         if(root != null)
             generateHuffCode(root, "");
+
+        long endTime = System.nanoTime(); // End timer
+
         System.out.println("Huff Codes: " + huffCodes);
 
         // generate compressed text
@@ -102,5 +107,6 @@ public class HuffmanCoding {
         System.out.println("Total Bits used by COMPRESSED text: " + (int)compressedTextLength);
         System.out.println("Total Bits used by PLAIN text: " + (int)plainTextLength);
         System.out.println("Size Reduction Percentage(%) for this text: " + String.format("%.2f", reductionPercentage) + "%");
+        System.out.println("Time Elapsed(in nanoseconds): " + (endTime - startTime));
     }
 }
