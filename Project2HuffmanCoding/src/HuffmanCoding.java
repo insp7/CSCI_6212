@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -11,6 +14,20 @@ import java.util.Queue;
  */
 public class HuffmanCoding {
     private static Map<Character, String> huffCodes;
+
+    /**
+     * Generates compressed text for a given plain text and its character-wise huffman codes
+     * @param text Plain text input
+     * @param huffCodes Character-wise huffman codes for compression
+     * @return
+     */
+    private static String generateCompressedText(String text, Map<Character, String> huffCodes) {
+        StringBuilder compressedText = new StringBuilder();
+        for(int i = 0; i < text.length(); i++) {
+            compressedText.append(huffCodes.get(text.charAt(i)));
+        }
+        return compressedText.toString();
+    }
 
     /**
      * Method to generate Huffman codes by traversing the generated Huffman Tree (MinHeap Tree)
@@ -46,16 +63,20 @@ public class HuffmanCoding {
     }
 
     public static void main(String[] args) throws IOException {
-        System.out.println("---Huffman Coding Algorithm---");
+        System.out.println("---Huffman Coding Lossless Compression---");
+
+        // input text from user
         System.out.println("Enter Plain Text:");
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String text = br.readLine(); // user input
+        String text = br.readLine();
+
+//        uncomment below lines to take input text from a file
+//        String filePath = ""; // enter file path url here
+//        String text = new String(Files.readAllBytes(Paths.get(filePath)));
 
         long startTime = System.nanoTime(); // Start timer
-
-        // calculate all characters' frequencies
-        Map<Character, Integer> frequencyMap = getFrequencies(text);
-//        System.out.println("Character Frequencies: " + frequencyMap);
+        Map<Character, Integer> frequencyMap = getFrequencies(text); // calculate all characters' frequencies
+        System.out.println("Character Frequencies: " + frequencyMap);
 
         /**
          * Comparator implemented such that least frequent character is first.
@@ -89,23 +110,17 @@ public class HuffmanCoding {
         huffCodes = new HashMap<>();
         if(root != null)
             generateHuffCode(root, "");
-
         long endTime = System.nanoTime(); // End timer
 
-        System.out.println("Huff Codes: " + huffCodes);
-
-        // generate compressed text
-        StringBuilder compressedText = new StringBuilder();
-        for(int i = 0; i < text.length(); i++) {
-            compressedText.append(huffCodes.get(text.charAt(i)));
-        }
+        String compressedText = generateCompressedText(text, huffCodes);
         double compressedTextLength = compressedText.length();
         double plainTextLength = text.length() * 8; // since 1 character = 1 byte = 8 bits
         double reductionPercentage = ((plainTextLength - compressedTextLength) / plainTextLength) * 100; // Reduction Percentage = [(Initial Quantity - Final Quantity) / Initial Quantity] x 100%
+
+        System.out.println("Huff Codes: " + huffCodes);
         System.out.println("Compressed Text (in encoded format): " + compressedText);
-        System.out.println("---FUN FACTS FOR THIS TEXT---");
-        System.out.println("Total Bits used by COMPRESSED text: " + (int)compressedTextLength);
-        System.out.println("Total Bits used by PLAIN text: " + (int)plainTextLength);
+        System.out.println("Plain Text Size: " + (int)plainTextLength + " bits");
+        System.out.println("Compressed Text Size: " + (int)compressedTextLength + " bits");
         System.out.println("Size Reduction Percentage(%) for this text: " + String.format("%.2f", reductionPercentage) + "%");
         System.out.println("Time Elapsed(in nanoseconds): " + (endTime - startTime));
     }
